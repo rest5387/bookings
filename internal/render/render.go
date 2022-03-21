@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/justinas/nosurf"
-	"github.com/trecknotrack/bookings/pkg/config"
-	"github.com/trecknotrack/bookings/pkg/models"
+	"github.com/trecknotrack/bookings/internal/config"
+	"github.com/trecknotrack/bookings/internal/models"
 )
 
 var functions = template.FuncMap{}
@@ -82,7 +82,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		name := filepath.Base(page)
 		// fmt.Println("Page is currently", name)
 		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
-		
+
 		if err != nil {
 			return myCache, err
 		}

@@ -6,11 +6,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/trecknotrack/bookings/pkg/models"
+	"github.com/trecknotrack/bookings/internal/models"
 
-	"github.com/trecknotrack/bookings/pkg/config"
+	"github.com/trecknotrack/bookings/internal/config"
 
-	"github.com/trecknotrack/bookings/pkg/render"
+	"github.com/trecknotrack/bookings/internal/render"
 )
 
 // Repo the repository used by the handlers

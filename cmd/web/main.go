@@ -8,10 +8,10 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 
-	"github.com/trecknotrack/bookings/pkg/config"
-	"github.com/trecknotrack/bookings/pkg/render"
+	"github.com/trecknotrack/bookings/internal/config"
+	"github.com/trecknotrack/bookings/internal/render"
 
-	"github.com/trecknotrack/bookings/pkg/handlers"
+	"github.com/trecknotrack/bookings/internal/handlers"
 )
 
 const portNumber = ":8080"
