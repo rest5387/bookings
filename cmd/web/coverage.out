@@ -1,0 +1,10 @@
+mode: set
+github.com/trecknotrack/bookings/cmd/web/main.go:45.13,47.16 2 0
+github.com/trecknotrack/bookings/cmd/web/main.go:51.2,59.16 4 0
+github.com/trecknotrack/bookings/cmd/web/main.go:47.16,49.3 1 0
+github.com/trecknotrack/bookings/cmd/web/main.go:62.18,77.16 10 1
+github.com/trecknotrack/bookings/cmd/web/main.go:82.2,89.12 6 1
+github.com/trecknotrack/bookings/cmd/web/main.go:77.16,80.3 2 0
+github.com/trecknotrack/bookings/cmd/web/middleware.go:17.45,28.2 3 1
+github.com/trecknotrack/bookings/cmd/web/middleware.go:31.50,33.2 1 1
+github.com/trecknotrack/bookings/cmd/web/routes.go:13.49,45.2 18 1

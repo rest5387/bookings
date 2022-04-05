@@ -6,6 +6,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/trecknotrack/bookings/internal/helpers"
+
+	"github.com/trecknotrack/bookings/internal/forms"
+
 	"github.com/trecknotrack/bookings/internal/models"
 
 	"github.com/trecknotrack/bookings/internal/config"
@@ -18,13 +22,13 @@ var Repo *Repository
 
 // Repository is the repository type
 type Repository struct {
-	app *config.AppConfig
+	App *config.AppConfig
 }
 
 // NewRepo create a new repository
 func NewRepo(a *config.AppConfig) *Repository {
 	return &Repository{
-		app: a,
+		App: a,
 	}
 }
 
@@ -35,11 +39,11 @@ func NewHandlers(r *Repository) {
 
 //Home is the home page handler
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	remoteIP := r.RemoteAddr
-	m.app.Session.Put(r.Context(), "remote_ip", remoteIP)
-	fmt.Println("Home put remote addr", m.app.Session.GetString(r.Context(), "remote_ip"))
-	fmt.Println("remote_ip", r.RemoteAddr)
-	fmt.Println("(Home func)Session key remote_ip exists?", m.app.Session.Exists(r.Context(), "remote_ip"))
+	// remoteIP := r.RemoteAddr
+	// m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+	// fmt.Println("Home put remote addr", m.App.Session.GetString(r.Context(), "remote_ip"))
+	// fmt.Println("remote_ip", r.RemoteAddr)
+	// fmt.Println("(Home func)Session key remote_ip exists?", m.App.Session.Exists(r.Context(), "remote_ip"))
 
 	render.RenderTemplate(w, r, "home.page.tmpl", &models.TemplateData{})
 }
@@ -47,27 +51,76 @@ func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 //About is the about page handler
 func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 	//perform some logic
-	stringMap := make(map[string]string)
-	stringMap["test"] = "Hello, again."
-	fmt.Println("Session lifetime", m.app.Session.Lifetime)
-	fmt.Println("Session cookie name", m.app.Session.Cookie.Name)
-	fmt.Println("Session key remote_ip exists?", m.app.Session.Exists(r.Context(), "remote_ip"))
-	remoteIP := m.app.Session.GetString(r.Context(), "remote_ip")
-	stringMap["remote_ip"] = remoteIP
+	// stringMap := make(map[string]string)
+	// stringMap["test"] = "Hello, again."
+	// fmt.Println("Session lifetime", m.App.Session.Lifetime)
+	// fmt.Println("Session cookie name", m.App.Session.Cookie.Name)
+	// fmt.Println("Session key remote_ip exists?", m.App.Session.Exists(r.Context(), "remote_ip"))
+	// remoteIP := m.App.Session.GetString(r.Context(), "remote_ip")
+	// stringMap["remote_ip"] = remoteIP
 
-	fmt.Println("Actual remote addr", r.RemoteAddr)
-	fmt.Println("About get remote addr", remoteIP, "\nstringmap ", stringMap["remote_ip"])
+	// fmt.Println("Actual remote addr", r.RemoteAddr)
+	// fmt.Println("About get remote addr", remoteIP, "\nstringmap ", stringMap["remote_ip"])
 
 	// send the data to the template
 	render.RenderTemplate(w, r, "about.page.tmpl", &models.TemplateData{
-		StringMap: stringMap,
+		// StringMap: stringMap,
 	})
 }
 
 // Reservation renders the make-reservation page and displays form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
+	var emptyReservation models.Reservation
+	data := make(map[string]interface{})
+	data["reservation"] = emptyReservation
+
 	// send the data to the template
-	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+		Form: forms.New(nil),
+		Data: data,
+	})
+}
+
+// PostReservation handles the posting of a reservation form
+func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
+	// call r.ParseForm at first to make r.Form/r.PostForm be available
+	err := r.ParseForm()
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
+	}
+
+	reservation := models.Reservation{
+		FirstName: r.Form.Get("first_name"),
+		LastName:  r.Form.Get("last_name"),
+		Email:     r.Form.Get("email"),
+		Phone:     r.Form.Get("phone"),
+	}
+
+	// Use self-defined Form structure to wrap request's Form/PostForm (url.Values)
+	form := forms.New(r.PostForm)
+
+	// form.Has("first_name", r)
+	form.Required("first_name", "last_name", "email")
+	form.MiniLength("first_name", 3)
+	form.IsEmail("email")
+
+	if !form.Valid() {
+		data := make(map[string]interface{})
+		data["reservation"] = reservation
+
+		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
+			Form: form,
+			Data: data,
+		})
+		return
+	}
+
+	// put reservation data to the session
+	m.App.Session.Put(r.Context(), "reservation", reservation)
+
+	//redirect user after Post request
+	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther)
 }
 
 // Generals renders the room page
@@ -110,7 +163,8 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 
 	out, err := json.MarshalIndent(resp, "", "    ")
 	if err != nil {
-		log.Panicln(err)
+		helpers.ServerError(w, err)
+		return
 	}
 
 	log.Println(string(out))
@@ -123,4 +177,24 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	// send the data to the template
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
+}
+
+// ReservationSummary renders the search availability page
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation)
+	if !ok {
+		m.App.ErrorLog.Println("can't get error from session")
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
+	m.App.Session.Remove(r.Context(), "reservation")
+	data := make(map[string]interface{})
+	data["reservation"] = reservation
+
+	// send the data to the template
+	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }

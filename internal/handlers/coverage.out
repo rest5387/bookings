@@ -1,0 +1,22 @@
+mode: set
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:27.47,31.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:34.33,36.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:39.67,47.2 6 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:50.68,67.2 10 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:70.74,80.2 4 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:83.78,86.16 2 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:91.2,106.19 6 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:118.2,121.66 2 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:86.16,89.3 2 0
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:106.19,115.3 4 0
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:125.71,128.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:131.69,134.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:137.75,140.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:143.79,148.2 3 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:156.79,163.16 3 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:167.2,170.14 3 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:163.16,165.3 1 0
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:174.70,177.2 1 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:180.81,182.9 2 1
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:189.2,196.4 4 0
+github.com/trecknotrack/bookings/internal/handlers/handlers.go:182.9,187.3 4 1
